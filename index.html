@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love Surprise ❤️</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #ffc4df, #e5c5ff);
+  color: #a52368;
+}
+
+.card {
+  width: 90%;
+  max-width: 400px;
+  padding: 35px 20px;
+  text-align: center;
+  background: rgba(255,255,255,0.88);
+  border-radius: 28px;
+  box-shadow: 0 15px 45px #c45a9860;
+  position: relative;
+  z-index: 2;
+}
+
+.emoji {
+  font-size: 65px;
+  animation: heartbeat 1s infinite;
+}
+
+h1 {
+  font-size: 30px;
+}
+
+p {
+  line-height: 1.6;
+}
+
+button {
+  border: none;
+  border-radius: 30px;
+  padding: 13px 25px;
+  margin: 8px;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+#yes {
+  color: white;
+  background: #ff3f96;
+  box-shadow: 0 5px 15px #ff3f9660;
+}
+
+#no {
+  color: #a52368;
+  background: #ffe2f0;
+}
+
+#message {
+  color: #e52e88;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.hidden {
+  display: none;
+}
+
+.heart {
+  position: fixed;
+  bottom: -40px;
+  animation: floatUp 6s linear forwards;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.confetti {
+  position: fixed;
+  top: -30px;
+  animation: fall 3s linear forwards;
+  pointer-events: none;
+  z-index: 5;
+}
+
+@keyframes heartbeat {
+  50% { transform: scale(1.15); }
+}
+
+@keyframes floatUp {
+  to {
+    transform: translateY(-110vh) rotate(35deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <section id="question">
+    <div class="emoji">💌</div>
+    <h1>Do you love me? ❤️</h1>
+    <p>I've got a little question for you! 🥹💗</p>
+
+    <button id="yes" onclick="sayYes()">
+      Yes 💖
+    </button>
+
+    <button id="no" onclick="moveNo()">
+      No 🙈
+    </button>
+
+    <p id="hint"></p>
+  </section>
+
+  <section id="success" class="hidden">
+    <div class="emoji">🥹💖🥳</div>
+    <h1>YEEEEE! 🎉</h1>
+    <div id="message">LOVE YOUUUU! 😍❤️💋</div>
+    <p>You just made my day! 💐✨</p>
+    <button id="yes" onclick="replay()">
+      Replay 💞
+    </button>
+  </section>
+
+</div>
+
+<script>
+const noButton = document.getElementById("no");
+const yesButton = document.getElementById("yes");
+const hint = document.getElementById("hint");
+
+const messages = [
+  "Are you sure? 🥺💗",
+  "Think again! 🙈💕",
+  "Oops! You missed! 😂💖",
+  "Give Yes a chance! 🥹❤️",
+  "The No button is running! 🏃💨"
+];
+
+let attempts = 0;
+let yesScale = 1;
+
+function moveNo() {
+  // Move No somewhere visible on the screen
+  const margin = 12;
+  const maxX = Math.max(
+    margin,
+    window.innerWidth - noButton.offsetWidth - margin
+  );
+  const maxY = Math.max(
+    margin,
+    window.innerHeight - noButton.offsetHeight - margin
+  );
+
+  noButton.style.position = "fixed";
+  noButton.style.left =
+    (margin + Math.random() * (maxX - margin)) + "px";
+  noButton.style.top =
+    (margin + Math.random() * (maxY - margin)) + "px";
+
+  hint.textContent = messages[attempts % messages.length];
+  attempts++;
+
+  yesScale = Math.min(1.5, yesScale + 0.07);
+  yesButton.style.transform = `scale(${yesScale})`;
+}
+
+// Make No run away when approached with a mouse
+noButton.addEventListener("pointerenter", function(event) {
+  if (event.pointerType === "mouse") {
+    moveNo();
+  }
+});
+
+// Also make it work with touchscreens
+noButton.addEventListener("touchstart", function(event) {
+  event.preventDefault();
+  moveNo();
+}, { passive: false });
+
+function sayYes() {
+  document.getElementById("question").classList.add("hidden");
+  document.getElementById("success").classList.remove("hidden");
+
+  // Celebrate with hearts and emojis
+  const emojis = ["💖", "💕", "💘", "✨", "🎉", "🥳", "🌸"];
+
+  for (let i = 0; i < 65; i++) {
+    const piece = document.createElement("span");
+    piece.className = "confetti";
+    piece.textContent =
+      emojis[Math.floor(Math.random() * emojis.length)];
+
+    piece.style.left = Math.random() * 100 + "vw";
+    piece.style.animationDuration = (2 + Math.random() * 3) + "s";
+    piece.style.animationDelay = Math.random() + "s";
+    piece.style.fontSize = (18 + Math.random() * 20) + "px";
+
+    document.body.appendChild(piece);
+
+    setTimeout(() => piece.remove(), 6000);
+  }
+}
+
+// Floating hearts in the background
+setInterval(() => {
+  const heart = document.createElement("span");
+  heart.className = "heart";
+  heart.textContent = ["💗", "💖", "💕", "💘"][
+    Math.floor(Math.random() * 4)
+  ];
+
+  heart.style.left = Math.random() * 100 + "vw";
+  heart.style.fontSize = (20 + Math.random() * 25) + "px";
+  heart.style.animationDuration = (4 + Math.random() * 4) + "s";
+
+  document.body.appendChild(heart);
+  setTimeout(() => heart.remove(), 8500);
+}, 500);
+
+function replay() {
+  attempts = 0;
+  yesScale = 1;
+
+  noButton.style.position = "";
+  noButton.style.left = "";
+  noButton.style.top = "";
+  yesButton.style.transform = "";
+  hint.textContent = "";
+
+  document.getElementById("success").classList.add("hidden");
+  document.getElementById("question").classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
+
